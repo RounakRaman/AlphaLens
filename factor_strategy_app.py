@@ -346,7 +346,7 @@ with st.sidebar:
     st.markdown("## ⚙️ Strategy Parameters")
 
     st.markdown("### 📂 Data Source")
-    data_source = st.radio("", ["Use built-in dummy data", "Upload my CSV"], label_visibility="collapsed")
+    data_source = st.radio("Data Source", ["Use built-in dummy data", "Upload my CSV"], label_visibility="collapsed")
     uploaded_file = None
     if data_source == "Upload my CSV":
         uploaded_file = st.file_uploader(
@@ -372,7 +372,7 @@ with st.sidebar:
     vol_window   = st.slider("Vol Lookback (days)", 63, 252, 126, 5)
 
     st.divider()
-    run_btn = st.button("▶  Run Strategy", type="primary", use_container_width=True)
+    run_btn = st.button("▶  Run Strategy", type="primary", width="stretch")
 
 # ─────────────────────────────────────────
 #  Header
@@ -550,7 +550,7 @@ for version in ["Base", "Regime-Neutral", "Vol-Target", "Kelly", "Market"]:
 kpi_df = pd.DataFrame(kpi_rows)
 st.dataframe(
     kpi_df,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
     column_config={
         "Version":    st.column_config.TextColumn("Version", width="medium"),
@@ -608,7 +608,7 @@ with tab1:
         xaxis=dict(gridcolor="#21262d"), yaxis=dict(gridcolor="#21262d"),
         height=450,
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Drawdown
     fig2 = go.Figure()
@@ -621,10 +621,16 @@ with tab1:
     ]:
         nav = bt[nav_col]
         dd  = (nav - nav.cummax()) / nav.cummax()
+        # Convert #rrggbb → rgba(r,g,b,0.3) properly
+        if col.startswith("#") and len(col) == 7:
+            r, g, b = int(col[1:3], 16), int(col[3:5], 16), int(col[5:7], 16)
+            fc = f"rgba({r},{g},{b},0.3)"
+        else:
+            fc = col
         fig2.add_trace(go.Scatter(
             x=bt["date"], y=dd, name=name, fill="tozeroy",
             line=dict(color=col, width=1.2),
-            fillcolor=col.replace("#", "rgba(").replace(")", "") if "#" in col else col,
+            fillcolor=fc,
         ))
     fig2.update_layout(
         title="Drawdown — All Versions",
@@ -633,7 +639,7 @@ with tab1:
         xaxis=dict(gridcolor="#21262d"), yaxis=dict(gridcolor="#21262d", tickformat=".1%"),
         height=320,
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
 # ---------- Tab 2: Monthly Returns ----------
 with tab2:
@@ -658,7 +664,7 @@ with tab2:
         coloraxis_colorbar=dict(tickformat=".1f", title="Ret %"),
         height=400,
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width="stretch")
 
 # ---------- Tab 3: Factor Signals ----------
 with tab3:
@@ -683,7 +689,7 @@ with tab3:
             xaxis=dict(gridcolor="#21262d"), yaxis=dict(gridcolor="#21262d"),
             height=360,
         )
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width="stretch")
 
     with col_b:
         # Latest factor values bar chart
@@ -704,7 +710,7 @@ with tab3:
             yaxis=dict(gridcolor="#21262d"),
             height=360,
         )
-        st.plotly_chart(figb, use_container_width=True)
+        st.plotly_chart(figb, width="stretch")
 
     # Signal comparison
     fig5 = go.Figure()
@@ -726,7 +732,7 @@ with tab3:
         xaxis=dict(gridcolor="#21262d"), yaxis=dict(gridcolor="#21262d"),
         height=300,
     )
-    st.plotly_chart(fig5, use_container_width=True)
+    st.plotly_chart(fig5, width="stretch")
 
 # ---------- Tab 4: Volatility ----------
 with tab4:
@@ -751,7 +757,7 @@ with tab4:
             font_color="#e6edf3", legend=dict(bgcolor="#161b22"),
             xaxis=dict(gridcolor="#21262d"), height=380,
         )
-        st.plotly_chart(fig6, use_container_width=True)
+        st.plotly_chart(fig6, width="stretch")
 
     # Rolling 12m Sharpe
     fig7 = go.Figure()
@@ -775,7 +781,7 @@ with tab4:
         xaxis=dict(gridcolor="#21262d"), yaxis=dict(gridcolor="#21262d"),
         height=350,
     )
-    st.plotly_chart(fig7, use_container_width=True)
+    st.plotly_chart(fig7, width="stretch")
 
 # ---------- Tab 5: Factor Correlations ----------
 with tab5:
@@ -804,10 +810,10 @@ with tab5:
         coloraxis_colorbar=dict(title="Corr"),
         height=380,
     )
-    st.plotly_chart(fig8, use_container_width=True)
+    st.plotly_chart(fig8, width="stretch")
 
     st.markdown("**Factor Correlation Table**")
-    st.dataframe(corr, use_container_width=True)
+    st.dataframe(corr, width="stretch")
 
 st.divider()
 
